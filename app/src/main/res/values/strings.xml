@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">WaadsuTest</string>
+    <string name="google_maps_API_key">AIzaSyBj0pKcIndcJW40kbLqAD3vE0rRmoOBXlA</string>
+    <string name="title_activity_maps">MapsActivity</string>
+</resources>
