@@ -6,8 +6,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.waadsutest.R
 
-//AIzaSyBj0pKcIndcJW40kbLqAD3vE0rRmoOBXlA
-
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
