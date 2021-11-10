@@ -23,7 +23,7 @@ class MapsFragment : Fragment() {
     //Создание экземпляра viewModel
     private lateinit var viewModel: ViewModelMain
 
-    //Создаю лямбду которая дают мне доступ к экземпляру карты когда она будет готова
+    //Создаю лямбду которая даёт мне доступ к экземпляру карты когда она будет готова
     private val callback = OnMapReadyCallback { googleMap ->
 
         //Прошу у viewModel geoJson
@@ -40,6 +40,8 @@ class MapsFragment : Fragment() {
 
         //Обработка полученного geoJson
         viewModel.geoJsonLiveData.observe(viewLifecycleOwner, { jsonObj ->
+            //Когда получил geoJson очищаю лайв дату с ошибкой
+            viewModel.clearErrorMessage()
             //Создание слоя на карту из полученного geoJson
             val layer = GeoJsonLayer(googleMap, jsonObj)
 

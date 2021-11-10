@@ -19,7 +19,7 @@ class ViewModelMain : ViewModel() {
     не мог изменять данные хранящиеся внутри ViewModel) и которые будут хранить в себе данные
     в которых нуждается view */
     private val _geoJsonLiveData = MutableLiveData<JSONObject>()
-    private val _errorMessageLiveData = MutableLiveData<String>()
+    private var _errorMessageLiveData = MutableLiveData<String>()
     private val _pathLengthLiveData = MutableLiveData<Int>()
     //Лайв даты которые только ВОЗВРАЩАЮТ изменяемые лайв даты, и доступны извне
     val geoJsonLiveData: LiveData<JSONObject>
@@ -101,5 +101,12 @@ class ViewModelMain : ViewModel() {
         * т.к метод от гугла возвращает данные в метрах */
         _pathLengthLiveData.value = (sumMeters.toBigDecimal())
             .setScale(0, RoundingMode.DOWN).toInt() / 1000
+    }
+
+
+    /* Пересоздаю лайв дату с сообщением о ошибке, что бы не выскакивало сообщение прикаждом перевароте
+    * экрана */
+    fun clearErrorMessage(){
+        _errorMessageLiveData = MutableLiveData<String>()
     }
 }
