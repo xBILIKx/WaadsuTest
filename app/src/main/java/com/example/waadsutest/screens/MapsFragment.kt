@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.waadsutest.R
 import com.example.waadsutest.screens.viewmodels.ViewModelMain
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -16,7 +17,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.data.geojson.GeoJsonLayer
-import java.math.RoundingMode
+import kotlinx.coroutines.delay
+import okhttp3.internal.wait
 
 
 class MapsFragment : Fragment() {
@@ -26,11 +28,21 @@ class MapsFragment : Fragment() {
     private val callback = OnMapReadyCallback { googleMap ->
 
         viewModel.getGeoJson(googleMap)
-        var pathLength = 0
+
+        viewModel.errorMessageLiveData.observe(viewLifecycleOwner, {
+            Toast.makeText(context, "Something is wrong, please, check your internet connection"
+                , Toast.LENGTH_LONG).show()
+            viewModel.getGeoJson(googleMap)
+        })
 
         viewModel.geoJsonLiveData.observe(viewLifecycleOwner, { jsonObj ->
             val layer = GeoJsonLayer(googleMap, jsonObj)
             viewModel.countLength(layer)
+
+            var pathLength = 0
+            viewModel.pathLengthLiveData.observe(viewLifecycleOwner, { _pathLength ->
+                pathLength = _pathLength
+            })
 
             val russia = LatLng(62.51951029803866, 93.01562831262851)
 
@@ -55,9 +67,7 @@ class MapsFragment : Fragment() {
             layer.addLayerToMap()
         })
 
-        viewModel.pathLengthLiveData.observe(viewLifecycleOwner, { _pathLength ->
-            pathLength = _pathLength
-        })
+
     }
 
     override fun onCreateView(
@@ -72,10 +82,6 @@ class MapsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = ViewModelProvider(this)[ViewModelMain::class.java]
-
-        viewModel.errorMessageLiveData.observe(viewLifecycleOwner, {
-            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-        })
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)

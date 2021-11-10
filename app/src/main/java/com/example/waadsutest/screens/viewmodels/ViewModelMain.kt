@@ -8,6 +8,7 @@ import com.google.gson.JsonObject
 import com.google.maps.android.SphericalUtil
 import com.google.maps.android.data.geojson.GeoJsonLayer
 import com.google.maps.android.data.geojson.GeoJsonMultiPolygon
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.*
 import org.json.JSONObject
@@ -32,22 +33,25 @@ class ViewModelMain : ViewModel() {
             .url("https://waadsu.com/api/russia.geo.json")
             .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                _errorMessageLiveData.value = e.message
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                response.use {
-                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
-
-                    val responseString = response.body!!.string()
-
-                    val geoJsonData = JSONObject(responseString)
-                    _geoJsonLiveData.postValue(geoJsonData)
+        viewModelScope.launch{
+            delay(5000)
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    _errorMessageLiveData.postValue(e.message)
                 }
-            }
-        })
+
+                override fun onResponse(call: Call, response: Response) {
+                    response.use {
+                        if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+                        val responseString = response.body!!.string()
+
+                        val geoJsonData = JSONObject(responseString)
+                        _geoJsonLiveData.postValue(geoJsonData)
+                    }
+                }
+            })
+        }
     }
 
     fun countLength(layer: GeoJsonLayer){
