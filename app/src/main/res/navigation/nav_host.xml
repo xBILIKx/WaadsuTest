@@ -7,6 +7,6 @@
     <fragment
         android:id="@+id/mapsFragment"
         android:name="com.example.waadsutest.screens.MapsFragment"
-        android:label="fragment_maps"
+        android:label="Map"
         tools:layout="@layout/fragment_maps" />
 </navigation>
